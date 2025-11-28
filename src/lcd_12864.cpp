@@ -5,7 +5,7 @@
 #include "lcd_12864.h"
 
 void u8g2_prepare() {
-    u8g2.setFont(u8g2_font_6x12_tf);
+    u8g2.setFont(font);
     u8g2.setFontRefHeightExtendedText();
     u8g2.setDrawColor(1);
     u8g2.setFontPosTop();
@@ -13,7 +13,7 @@ void u8g2_prepare() {
 }
 
 uint8_t sLengthPix(const String &t) {
-    return t.length() * charLenPix;
+    return t.length() * charLengthPix;
 }
 
 void drawData(const int8_t xBase, const uint8_t y, const uint8_t offset, const String &s) {
@@ -28,25 +28,49 @@ void drawData(const int8_t xBase, const uint8_t y, const uint8_t offset, const S
 }
 
 
-uint8_t drawSection(const uint8_t y, const uint8_t fontH, const String &head, const float a, const float b) {
-    uint8_t lastLine = y + (2 * fontH);
+uint8_t drawSection(const uint8_t y, const String &head, const float a, const float b) {
+    uint8_t lastLine = y + (2 * charHeightPix);
 
     drawData(lcdQuarterSecond, y, 0, head.c_str());
-    drawData(0, y + fontH, 0, ">>");
-    drawData(-1, y + fontH, 0, ">>");
-    u8g2.drawVLine(lcdQuarterSecond, y + fontH, 10);
-    drawData(lcdQuarterFirst, y + fontH, 6, String(int(a)));
-    drawData(lcdQuarterThird, y + fontH, -6, String(int(b)));
+    drawData(0, y + charHeightPix, 0, ">>");
+    drawData(-1, y + charHeightPix, 0, ">>");
+    u8g2.drawVLine(lcdQuarterSecond, y + charHeightPix, 10);
+    drawData(lcdQuarterFirst, y + charHeightPix, 6, String(int(a)));
+    drawData(lcdQuarterThird, y + charHeightPix, -6, String(int(b)));
     u8g2.drawHLine(0, lastLine, 128);
     return lastLine;
 }
 
 void drawThreeSections() {
-    uint8_t fontH = 10;
+    u8g2.clearBuffer();
     uint8_t lastLine = 0;
-    lastLine = drawSection(lastLine, fontH, "Inflated air", getTemperatureByDevice(airIn),
+    lastLine = drawSection(lastLine, "Inflated air", getTemperatureByDevice(airIn),
                            getTemperatureByDevice(airOut));
-    lastLine = drawSection(lastLine + 1, fontH, "Coolant", getTemperatureByDevice(coolantIn),
+    lastLine = drawSection(lastLine + 1, "Coolant", getTemperatureByDevice(coolantIn),
                            getTemperatureByDevice(coolantOut));
-    drawSection(lastLine + 1, fontH, "Extra sensors", getRandTemp(), getRandTemp());
+    if (font == u8g2_font_6x12_tf) {
+        drawSection(lastLine + 1, "Extra sensors", getRandTemp(), getRandTemp());
+    }
+    u8g2.sendBuffer();
+}
+
+uint8_t drawRaw(const uint8_t xBase, const uint8_t y, const uint8_t offset, const String &head, const String& data) {
+    uint8_t sLenPix = sLengthPix(head);
+    u8g2.drawStr(xBase - sLenPix - offset, y, head.c_str());
+    u8g2.drawStr(xBase + offset + 1, y, String(data).c_str());
+    u8g2.drawHLine(0, charHeightPix + y, 128);
+    return y + charHeightPix + 2;
+}
+
+void twoColumns() {
+    u8g2.clearBuffer();
+    uint8_t y = 0;
+    uint8_t x = lcdQuarterThird - charLengthPix;
+    uint8_t offset = 3;
+    y = drawRaw(x, y, offset, "Intake in", String(int(getTemperatureByDevice(airIn))));
+    y = drawRaw(x, y, offset, "Intake out", String(int(getTemperatureByDevice(airOut))));
+    y = drawRaw(x, y, offset, "Coolant in", String(int(getTemperatureByDevice(coolantIn))));
+    y = drawRaw(x, y, offset, "Coolant out", String(int(getTemperatureByDevice(coolantOut))));
+    u8g2.drawVLine(x, 0, y -1);
+    u8g2.sendBuffer();
 }
