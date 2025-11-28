@@ -40,6 +40,7 @@ void setup() {
     }
 
     u8g2.begin();
+    u8g2_prepare();
 }
 
 void loop() {
@@ -51,36 +52,11 @@ void loop() {
     sensors.requestTemperatures();
 
     u8g2.clearBuffer();
-    u8g2_prepare();
 
-    //  Inflated air
-    drawData(lcdQuarterSecond, 0, 0, "Inflated air");
-    drawData(0, 10, 0,">>");
-    drawData(-1, 10, 0,">>");
-    u8g2.drawVLine(lcdQuarterSecond, 10, 10);
-    drawData(lcdQuarterFirst, 10, 6, String(int(getTemperatureByDevice(airIn))));
-    drawData(lcdQuarterThird, 10, -6, String(int(getTemperatureByDevice(airOut))));
-    u8g2.drawHLine(0, 20, 128);
-
-    //  Coolant
-    drawData(lcdQuarterSecond, 21, 0, "Coolant");
-    drawData(0, 31, 0,">>");
-    drawData(-1, 31, 0,">>");
-    u8g2.drawVLine(lcdQuarterSecond, 31, 10);
-    drawData(lcdQuarterFirst, 31, 6, String(int(getTemperatureByDevice(coolantIn))));
-    drawData(lcdQuarterThird, 31, -6, String(int(getTemperatureByDevice(coolantOut))));
-    u8g2.drawHLine(0, 41, 128);
-
-//    Extra
-    drawData(lcdQuarterSecond, 42, 0, "Extra sensors");
-    drawData(0, 52, 0, ">>");
-    drawData(-1, 52, 0, ">>");
-    u8g2.drawVLine(lcdQuarterSecond, 52, 10);
-    drawData(lcdQuarterFirst, 52, 6, String(getRandTemp()));
-    drawData(lcdQuarterThird, 52, -6, String(getRandTemp()));
+    drawThreeSections();
 
     u8g2.sendBuffer();
 
     delay(250);
-    loopId ++;
+    loopId++;
 }

@@ -10,8 +10,14 @@
 #define ONE_WIRE_BUS 14
 #define TEMPERATURE_PRECISION 9
 
-extern OneWire oneWire;//(ONE_WIRE_BUS);
-extern DallasTemperature sensors;//(&oneWire);
+extern OneWire oneWire;
+extern DallasTemperature sensors;
+
+extern DeviceAddress airIn;
+extern DeviceAddress airOut;
+extern DeviceAddress coolantIn;
+extern DeviceAddress coolantOut;
+
 extern uint8_t sensorsCount;
 extern const bool emulateTemp;
 

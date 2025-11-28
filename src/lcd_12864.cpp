@@ -27,3 +27,26 @@ void drawData(const int8_t xBase, const uint8_t y, const uint8_t offset, const S
     u8g2.drawStr(x, y, s.c_str());
 }
 
+
+uint8_t drawSection(const uint8_t y, const uint8_t fontH, const String &head, const float a, const float b) {
+    uint8_t lastLine = y + (2 * fontH);
+
+    drawData(lcdQuarterSecond, y, 0, head.c_str());
+    drawData(0, y + fontH, 0, ">>");
+    drawData(-1, y + fontH, 0, ">>");
+    u8g2.drawVLine(lcdQuarterSecond, y + fontH, 10);
+    drawData(lcdQuarterFirst, y + fontH, 6, String(int(a)));
+    drawData(lcdQuarterThird, y + fontH, -6, String(int(b)));
+    u8g2.drawHLine(0, lastLine, 128);
+    return lastLine;
+}
+
+void drawThreeSections() {
+    uint8_t fontH = 10;
+    uint8_t lastLine = 0;
+    lastLine = drawSection(lastLine, fontH, "Inflated air", getTemperatureByDevice(airIn),
+                           getTemperatureByDevice(airOut));
+    lastLine = drawSection(lastLine + 1, fontH, "Coolant", getTemperatureByDevice(coolantIn),
+                           getTemperatureByDevice(coolantOut));
+    drawSection(lastLine + 1, fontH, "Extra sensors", getRandTemp(), getRandTemp());
+}
