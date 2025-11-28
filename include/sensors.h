@@ -1,6 +1,7 @@
 //
 // Created by Gennadii Ilyashenko on 27.11.2025.
 //
+
 #include <Arduino.h>
 #include <Wire.h>
 #include "OneWire.h"

@@ -1,3 +1,7 @@
+//
+// Created by Gennadii Ilyashenko on 27.11.2025.
+//
+
 #include <Arduino.h>
 
 #include "sensors.h"
@@ -21,6 +25,9 @@ uint8_t sensorsCount = 0;
 const uint8_t charLenPix = 6;
 const bool emulateTemp = true;
 
+const uint8_t loopNum = 25;
+uint8_t loopId = 0;
+
 void setup() {
     Serial.begin(115200);
 
@@ -32,15 +39,16 @@ void setup() {
         ESP.restart();
     }
 
-    printSensorsAddress(sensorsCount);
-
     u8g2.begin();
 }
 
 void loop() {
-    sensors.requestTemperatures();
+    if (loopId == 0 || loopId == loopNum) {
+        printSensorsAddress(sensorsCount);
+        loopId = 0;
+    }
 
-    printSensorsAddress(sensorsCount);
+    sensors.requestTemperatures();
 
     u8g2.clearBuffer();
     u8g2_prepare();
@@ -74,4 +82,5 @@ void loop() {
     u8g2.sendBuffer();
 
     delay(250);
+    loopId ++;
 }

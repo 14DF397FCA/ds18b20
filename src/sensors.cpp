@@ -16,11 +16,14 @@ uint8_t getDeviceCount() {
 }
 
 void printSensorsAddress(uint8_t num) {
+    Serial.println("Sensors addresses");
     DeviceAddress t;
     for (uint8_t i; i < num; i++) {
         sensors.getAddress(t, i);
+        Serial.print(String(i) + ": ");
         printAddress(t);
     }
+    Serial.println("---");
 }
 
 void printAddress(DeviceAddress deviceAddress) {
@@ -52,20 +55,6 @@ float getTemperatureByDevice(DeviceAddress deviceAddress) {
         return -999.0;
     }
     return tempC;
-}
-
-void printTemperature(DeviceAddress deviceAddress) {
-    Serial.print("Temp C: ");
-    Serial.println(getTemperatureByDevice(deviceAddress));
-}
-
-
-void printData(DeviceAddress deviceAddress) {
-    Serial.print("Device Address: ");
-    printAddress(deviceAddress);
-    Serial.print("; ");
-    printTemperature(deviceAddress);
-    Serial.println();
 }
 
 float getRandTemp() {
